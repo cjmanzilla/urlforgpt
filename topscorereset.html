@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Choss Challenge</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #333;
+            color: #fff;
+        }
+        #quiz-container {
+             max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            background-color: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            position: relative; /* Added position relative */
+            min-height: 50vh; /* Ensure quiz container fills the viewport height */
+        }
+        .options {
+            margin-top: 20px;
+        }
+        .option {
+            display: block;
+            margin: 5px auto;
+            padding: 10px 20px;
+            background-color: #444;
+            border: 1px solid #888;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .option:hover {
+            background-color: #555;
+        }
+        .active {
+            background-color: #159;
+            color: white; /* Change color of active regions to blue */
+        }
+        #back-btn {
+            display: block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #444;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s;
+        }
+        #back-btn:hover {
+            background-color: #555;
+        }
+        #footer {
+            margin-top: 20px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <h1>Can you locate the climb?</h1>
+    <p id="initial-message">Select one or more areas to begin. Good luck!</p>
+    <div>
+        <button id="yosemiteBtn">Yosemite</button>
+        <button id="tuolumneBtn">Tuolumne</button>
+        <button id="tahoeBtn">Tahoe</button>
+        <button id="sierrasBtn">High Sierras</button>
+        <button id="jtreeBtn">J-Tree</button>
+        <button id="sfbayBtn">SF Bay</button>
+        <button id="eastsideBtn">Eastside</button>
+        <button id="sonoraBtn">Sonora</button>
+        <p id="top-score">Top Score: 0</p>
+        <p id="streak">Streak: 0</p>
+    </div>
+    <h2 id="climb-name"></h2>
+    <div class="options">
+        <div class="option"></div>
+        <div class="option"></div>
+        <div class="option"></div>
+        <div class="option"></div>
+    </div>
+    <p id="result"></p>
+</div>
+<div id="footer">
+    <a href="index.html" id="back-btn">Back to Homepage</a>
+</div>
+
+<script>
+    var yosemiteEasyRoutes = [
+        // List of easy to guess Yosemite routes
+{ name: "The Nose 5.9 C2", location: "El Capitan "},
+{ name: "Freerider 5.13a PG13", location: "El Capitan "},
+{ name: "Snake Dike 5.7 R", location: "Half Dome "},
+{ name: "Royal Arches 5.10a/b A0", location: " Royal Arches "},
+{ name: "Salathe Wall 5.9 C2", location: "El Capitan "},
+{ name: "Astroman 5.11c", location: "Washington Column "},
+{ name: "Freeblast 5.11", location: "El Capitan "},
+{ name: "Golden Corners (Blue Collar Free) 5.12+", location: "Ribbon Falls Area "},
+{ name: "The Nutcracker Suite (aka Nutcracker) 5.8", location: "El Cap Picnic Area (Eagle Creek)"},
+{ name: "Lurking Fear 5.7 C2", location: "El Capitan "},
+{ name: "East Buttress 5.10b V4", location: "El Capitan "},
+{ name: "Golden Gate 5.13a", location: "El Capitan "},
+{ name: "Sons of Yesterday 5.10-", location: " Royal Arches "},
+{ name: "Serenity Crack 5.10d PG13", location: " Royal Arches "},
+{ name: "The North Face 5.11c", location: "The Rostrum"},
+{ name: "Central Pillar of Frenzy 5.9", location: "Cathedral Area "},
+{ name: "Separate Reality 5.12a", location: "Wildcat Falls & Above the Cookie "},
+{ name: "Regular Northwest Face 5.9 C1", location: "Half Dome "},
+{ name: "Steck-Salathe 5.10-", location: "Sentinel Rock "},
+{ name: "South Face 5.8 C1", location: "Washington Column "},
+{ name: "East Buttress 5.10c A0", location: "Cathedral Area "},
+{ name: "The Grack - Center 5.6", location: "Glacier Point Apron "},
+{ name: "Magic Mushroom 5.14a A3", location: "El Capitan "},
+{ name: "Bishops Terrace 5.8", location: "Church Bowl "},
+{ name: "West Face 5.7 C2", location: "Leaning Tower "},
+{ name: "The Shield 5.8 A3 PG13", location: "El Capitan "},
+{ name: "Reed's Pinnacle-Direct Route 5.10a", location: "Reed's Pinnacle "},
+{ name: "Regular Route 5.9", location: "Cathedral Area "},
+{ name: "Tenaya's Tears 5.10c PG13", location: " Royal Arches "},
+{ name: "Commitment 5.9", location: "Yosemite Falls Area "},
+{ name: "Butterballs 5.11c", location: "The Cookie Cliff "},
+{ name: "Lost Arrow Spire Direct 5.8 C2", location: "Yosemite Falls Area "},
+{ name: "Outer Limits 5.10c", location: "The Cookie Cliff "},
+{ name: "West Face 5.11c", location: "El Capitan "},
+{ name: "Northeast Buttress 5.9+ PG13", location: "Cathedral Area "},
+{ name: "Voyager 5.11c", location: "Fifi Buttress "},
+{ name: "Freestone (Geek Towers, Left) 5.11c", location: "Yosemite Falls Area "},
+{ name: "Braille Book 5.8+", location: "Cathedral Area "},
+{ name: "The Prow 5.8 C2", location: "Washington Column "},
+{ name: "The Phoenix 5.13a", location: "Cascade Area "},
+{ name: "Sacherer Cracker 5.10a", location: "El Capitan "},
+{ name: "Triple Direct 5.9 C2", location: "El Capitan "},
+{ name: "Center of the Universe 5.11-", location: "Fifi Buttress "},
+{ name: "Muir Wall 5.10 C3-", location: "El Capitan "},
+{ name: "Mescalito 5.9+ A3", location: "El Capitan "},
+{ name: "Crest Jewel (and Crest Jewel Direct) 5.10 R", location: "North Dome "},
+{ name: "Moby Dick Center 5.10a", location: "El Capitan "},
+{ name: "Mr. Natural 5.10+", location: "Glacier Point Apron "},
+{ name: "Lost Arrow Tip 5.7 C2", location: "Yosemite Falls Area "},
+{ name: "Jericho Wall Free 5.12a", location: "Glacier Point Apron "}
+    ];
+
+    var yosemiteMediumRoutes = [
+{ name: "Father Time 5.13b PG13", location: "Cathedral Area "},
+{ name: "My Favorite Things 5.10a", location: "Clouds Rest "},
+{ name: "Meltdown 5.14c PG13", location: "Cascade Area "},
+{ name: "Wayward Son 5.12c", location: "Lost Brother "},
+{ name: "The Last Crusade 5.12-", location: "Cathedral Area "},
+{ name: "Jamcrack 5.9", location: "Yosemite Falls Area "},
+{ name: "Lost Arrow Chimney 5.10a", location: "Yosemite Falls Area "},
+{ name: "South Face Route 5.8", location: "North Dome "},
+{ name: "Generator Crack 5.10c", location: "Generator Station "},
+{ name: "Lunatic Fringe 5.10c", location: "Reed's Pinnacle "},
+{ name: "The Moratorium 5.11b", location: "El Cap Picnic Area (Eagle Creek)"},
+{ name: "Cookie Monster 5.12a", location: "The Cookie Cliff "},
+{ name: "El Nino 5.13b/c", location: "El Capitan "},
+{ name: "Ahab 5.10b", location: "El Capitan "},
+{ name: "Autobahn 5.11+", location: "Half Dome "},
+{ name: "Romulan Warbird 5.12c", location: "Fifi Buttress "},
+{ name: "Tales of Power 5.12", location: "Wildcat Falls & Above the Cookie "},
+{ name: "Hall of Mirrors 5.12c R", location: "Glacier Point Apron "},
+{ name: "Direct North Buttress (DNB) 5.10b", location: "Cathedral Area "},
+{ name: "Twilight Zone 5.10d", location: "The Cookie Cliff "},
+{ name: "Cosmic Debris 5.13b", location: "The Chapel Wall"},
+{ name: "Absolutely Free, Center 5.9", location: "Camp 4 Area "},
+{ name: "New Dawn 5.8+ C3+", location: "El Capitan "},
+{ name: "Blond Ike 5.11a R", location: "Half Dome "},
+{ name: "Salathe (pitch 1) 5.10c", location: "El Capitan "},
+{ name: "Scarface (Free) 5.12", location: "Liberty Cap "},
+{ name: "Riding on the Wind 5.11+", location: "The Widow's Tears Area "},
+{ name: "South Face 5.11- C2+ PG13", location: "Mount Watkins "},
+{ name: "Monday Morning Slab, Harry Daley Route 5.8", location: "Glacier Point Apron "},
+{ name: "Dream Team 5.13a", location: "Fifi Buttress "},
+{ name: "Wall of Early Morning Light 5.9 A2+", location: "El Capitan "},
+{ name: "Five and Dime 5.10d", location: "Five and Dime Cliff "},
+{ name: "New Dimensions 5.11a", location: "rch Rock "},
+{ name: "Growing Up 5.13a A0", location: "Half Dome "},
+{ name: "Tribal Rite 5.8 A3+", location: "El Capitan "},
+{ name: "Crack-a-Go-Go 5.11c PG13", location: "The Cookie Cliff "},
+{ name: "Jo Jo 5.10b/c", location: "Washington Column "},
+{ name: "The Crucifix 5.12b", location: "Cathedral Area "},
+{ name: "The Xue Way 5.12a C0", location: "Half Dome "},
+{ name: "Stoner's Highway 5.10c R", location: "Cathedral Area "},
+{ name: "The Silent Line 5.10 C1", location: "Ribbon Falls Area "},
+{ name: "Hawleywood 5.9+", location: "Five and Dime Cliff "},
+{ name: "Wheat Thin 5.10c", location: "The Cookie Cliff "},
+{ name: "South Seas 5.9 A3+", location: "El Capitan "},
+{ name: "Blind Faith 5.11+", location: "The Rostrum"},
+{ name: "Teabag Wisdom 5.11a", location: "Mount Watkins "},
+{ name: "Alien Finish 5.12b", location: "The Rostrum"},
+{ name: "Catchy Corner 5.11a", location: "The Cookie Cliff "},
+{ name: "Galactic Hitchhiker 5.11b", location: "Glacier Point Apron "},
+{ name: "The Final Frontier 5.13b", location: "Fifi Buttress "}
+    ];
+
+    var yosemiteHardRoutes = [
+{ name: "Book of Job 5.10", location: "Cathedral Area "},
+{ name: "Kauk-kulator 5.11c", location: "The Rostrum"},
+{ name: "Crimson Cringe 5.12b", location: "Cascade Area "},
+{ name: "Westie Face 5.13- R", location: "Leaning Tower "},
+{ name: "TRON 5.13b PG13", location: "El Capitan "},
+{ name: "Jolly Roger 5.10+ A4+ R", location: "El Capitan "},
+{ name: "RosaRosa 5.11a", location: "Five and Dime Cliff "},
+{ name: "Red Zinger 5.11+", location: "The Cookie Cliff "},
+{ name: "Sunkist 5.8 A3+", location: "El Capitan "},
+{ name: "Gates of Delirium 5.12-", location: "Ribbon Falls Area "},
+{ name: "Waverly Wafer 5.11a", location: "The Cookie Cliff "},
+{ name: "The Nexus AKA The Niels Tietze Memorial Route 5.13-", location: "Fifi Buttress "},
+{ name: "1096 5.10d", location: " Royal Arches "},
+{ name: "Crack of Doom 5.10a", location: "Elephant Rock "},
+{ name: "Fish Crack 5.12a", location: "Cascade Area "},
+{ name: "The Great Escape 5.11d", location: "The Chapel Wall"},
+{ name: "Border Country 5.12c R", location: "Cathedral Area "},
+{ name: "Stone Groove 5.10b", location: "Reed's Pinnacle "},
+{ name: "Bunnell Boa 5.11a", location: "El Capitan "},
+{ name: "Nutcracker 5.9 Start Variation 5.9", location: "El Cap Picnic Area (Eagle Creek)"},
+{ name: "Chingando 5.10a", location: "Reed's Pinnacle "},
+{ name: "Peter Pan 5.9", location: "El Capitan "},
+{ name: "Pacific Ocean Wall 5.9+ A3+ R", location: "El Capitan "},
+{ name: "Hotline 5.12b", location: "Elephant Rock "},
+{ name: "Catchy 5.10d", location: "The Cookie Cliff "},
+{ name: "The Good Book 5.10d", location: "Camp 4 Area "},
+{ name: "Mark of the Beast 5.13b", location: "El Cap Picnic Area (Eagle Creek)"},
+{ name: "Lost in America 5.10a A4", location: "El Capitan "},
+{ name: "Midterm 5.10b", location: "rch Rock "},
+{ name: "Otherworld 5.11d", location: "Parkline Slab "},
+{ name: "Bircheff-Williams 5.11d", location: "Cathedral Area "},
+{ name: "Mid-Life Crisis 5.10b", location: " Royal Arches "},
+{ name: "Mahtah 5.12+", location: "Liberty Cap "},
+{ name: "Mental Block 5.10c", location: "Sentinel Creek Area "},
+{ name: "Gripper 5.10b", location: "rch Rock "},
+{ name: "Manana 5.10d", location: "Sentinel Creek Area "},
+{ name: "Yin-Yang 5.10d", location: "Sentinel Creek Area "},
+{ name: "Tennessee Wall (P1: Tennessee Strings) 5.12b", location: "The Cookie Cliff "},
+{ name: "More Burly than Girly 5.12a", location: "Fifi Buttress "},
+{ name: "Flight of the Albatross 5.10 A4", location: "El Capitan "},
+{ name: "Eagle's Way 5.8 A3", location: "El Capitan "},
+{ name: "Hawkman's Escape 5.9", location: "Camp 4 Area "},
+{ name: "Drive By Shooting 5.12a", location: "The Chapel Wall"},
+{ name: "Scorched Earth 5.8 A4 PG13", location: "El Capitan "},
+{ name: "Dust in the Wind 5.11", location: "Camp 4 Area "},
+{ name: "Flying In The Mountains 5.11a", location: "Parkline Slab "},
+{ name: "Lunar Eclipse 5.7 A4 PG13", location: "El Capitan "},
+{ name: "New Diversions 5.10a", location: "New Diversions "},
+{ name: "Killa Beez 5.11d", location: "The Chapel Wall"},
+{ name: "Wet Denim Daydream 5.7 C3 PG13", location: "Leaning Tower "}
+    ];
+
+    var tuolumneEasyRoutes = [
+{ name: "Matthes Crest Traverse - South to North 5.7", location: "Matthes Crest "},
+{ name: "Regular Route 5.9", location: " Fairview Dome "},
+{ name: "West Ridge 5.6", location: "Mt. Conness "},
+{ name: "West Crack 5.9", location: " DAFF Dome "},
+{ name: "Tenaya, Matthes, Cathedral Traverse 5.7", location: "Cathedral Range Enchainments "},
+{ name: "Southeast Buttress 5.6", location: " Cathedral Peak "},
+{ name: "Oz 5.10d", location: "Drug Dome "},
+{ name: "Bachar-Yerian 5.11c X", location: " Medlicott Dome "},
+{ name: "Hobbit Book 5.7", location: " Mariuolumne Dome "},
+{ name: "On the Lamb 5.9", location: " Lamb Dome "},
+{ name: "Tuolumne Alpine Triple Crown 5.6", location: "Mt. Conness "},
+{ name: "Lucky Streaks 5.10+", location: " Fairview Dome "},
+{ name: "Crescent Arch 5.10a", location: " DAFF Dome "},
+{ name: "Peace 5.13d", location: " Medlicott Dome "}
+        // List of easy Tuolumne routes
+    ];
+
+    var tuolumneMediumRoutes = [
+{ name: "Orange Plasma 5.11a", location: " Cottage Domes "},
+{ name: "Ciebola 5.10b PG13", location: " Medlicott Dome "},
+{ name: "Mystery Route (Konvicts do Koalas) 5.10+", location: " Cottage Domes "},
+{ name: "Sunshine 5.10d R", location: "Drug Dome "},
+{ name: "Wailing Wall 5.11d", location: " Medlicott Dome "},
+{ name: "Scorpion 5.11+", location: " Medlicott Dome "},
+{ name: "Titty Twister 5.10c", location: " Medlicott Dome "},
+{ name: "Kill Bill 5.10b", location: " Medlicott Dome "},
+{ name: "Positivity 5.13a", location: "Micro Dome "},
+{ name: "Arch Rival 5.11c/d", location: "Stately Pleasure Dome "},
+{ name: "Plastic Exploding Inevitable 5.10c A4 R", location: " Fairview Dome "}
+        // List of medium Tuolumne routes
+    ];
+
+    var tuolumneHardRoutes = [
+{ name: "Shadow Warriors 5.12c", location: " Whizz Domes "},
+{ name: "By Hook or By Crook 5.11b PG13", location: "Harlequin Dome "},
+{ name: "Damsel Fly 5.11a", location: " Medlicott Dome "},
+{ name: "Ursula 5.10c PG13", location: "Dozier Dome "},
+{ name: "Loco Yokel 5.10d", location: " Medlicott Dome "},
+{ name: "Arms Race 5.10d", location: " Mariuolumne Dome "},
+{ name: "Easy Wind 5.11c", location: " Mariuolumne Dome "},
+{ name: "Shiner 5.11b/c", location: " Medlicott Dome "},
+{ name: "Shadow of Doubt 5.10c PG13", location: "Hammer Dome "}
+        // List of hard Tuolumne routes
+    ];
+
+    var tahoeEasyRoutes = [
+{ name: "Corrugation Corner 5.7", location: " Lover's Leap "},
+{ name: "Bear's Reach 5.7", location: " Lover's Leap "},
+{ name: "Traveler Buttress 5.9", location: " Lover's Leap "},
+{ name: "The Line 5.9", location: " Lover's Leap "},
+{ name: "Sands of Time 5.9", location: " Calaveras Dome "},
+{ name: "One Hand Clapping 5.9", location: " Black Wall "},
+{ name: "Hospital Corner 5.10a", location: " Lover's Leap "},
+{ name: "Silk Road (High Times) 5.11", location: " Calaveras Dome "},
+{ name: "Grand Illusion 5.13b/c", location: " Sugarloaf Area "},
+{ name: "Wall of the Worlds 5.10+ PG13", location: " Calaveras Dome "},
+{ name: "Black September 5.9", location: " Black Wall "},
+{ name: "The Fracture 5.10d", location: " Sugarloaf Area "},
+{ name: "Surrealistic Pillar Direct 5.10b", location: " Lover's Leap "},
+{ name: "Candyland 5.10c", location: " Phantom Spires "},
+{ name: "Step Into The Light 5.10c", location: " The Emeralds "},
+{ name: "Karakoram Highway 5.11c PG13", location: " Calaveras Dome "},
+{ name: "Jellyroll Arch 5.8", location: " Grouse Slab "},
+{ name: "Psychedelic Tree 5.9", location: " Lover's Leap "},
+{ name: "Nova Express 5.9+", location: "Snowshed Wall "},
+{ name: "Eeyore's Enigma 5.10a", location: " Lover's Leap "},
+{ name: "Space Walk 5.11d", location: "Eagle Lake Cliff "},
+{ name: "The Perfect Lie Back 5.8", location: " The Fortress "},
+{ name: "Bat Karma 5.13a", location: " Cave Valley (aka Auburn Quarry) "},
+{ name: "Fear of Flying 5.9+", location: " Phantom Spires "},
+{ name: "Bottomless Topless 5.10a", location: "Snowshed Wall "},
+{ name: "Cookie Mix 5.12a", location: "South Star Wall "},
+{ name: "One Of These Days 5.10c", location: " Cloudburst Canyon "},
+{ name: "Cannibals 5.12d", location: "Snowshed Wall "},
+{ name: "Monkey Paws 5.12a", location: "Snowshed Wall "},
+{ name: "Super Size Me 5.11a", location: " The Emeralds "}
+    ];
+
+    var tahoeMediumRoutes = [
+{ name: "Tombstone Terror 5.10c", location: " Lover's Leap "},
+{ name: "Touch and Go 5.9", location: " Black Wall "},
+{ name: "Scimitar 5.9 R", location: " Lover's Leap "},
+{ name: "Charlee And The Stick Factory 5.11a", location: " The Emeralds "},
+{ name: "Steel Monkey 5.12a", location: " The Emeralds "},
+{ name: "Boot Hill 5.11", location: " Lover's Leap "},
+{ name: "Warp Factor 5.13a", location: "South Star Wall "},
+{ name: "Farewell To Arms 5.10b", location: "Snowshed Wall "},
+{ name: "Space Truckin' 5.10a/b", location: "Eagle Lake Cliff "},
+{ name: "Tree Beard 5.12b", location: "Cascade Cliff "},
+{ name: "Panic In Detroit 5.12b/c", location: "Snowshed Wall "},
+{ name: "All American Finger Crack 5.9", location: "Emerald Point "},
+{ name: "Weekend At Bernie's 5.14a", location: "Cascade Cliff "},
+{ name: "Fantasia 5.9 R", location: " Lover's Leap "},
+{ name: "Peter Principle 5.11a", location: "Snowshed Wall "},
+{ name: "Pillar of Society 5.12-", location: " Lover's Leap "},
+{ name: "J'aime Bonpland 5.7", location: "Calawee Cliffs "},
+{ name: "Schizophrenic Dike 5.10+", location: " Calaveras Dome "},
+{ name: "Old Camp Dihedral 5.7+", location: " Silver Lake "},
+{ name: "North Face Route 5.11a", location: " Lover's Leap "},
+{ name: "Touch A Cannibal 5.10a", location: " Black Wall "},
+{ name: "Pump Lust 5.13b", location: "Snowshed Wall "},
+{ name: "Aerial 5.11a", location: "Snowshed Wall "},
+    ];
+
+    var tahoeHardRoutes = [
+{ name: "Taurus 5.11b", location: " Sugarloaf Area "},
+{ name: "Firecracker 5.10b", location: " Black Wall "},
+{ name: "Radio Static 5.11d", location: " The Emeralds "},
+{ name: "Duppy Conqueror 5.11c", location: " The Emeralds "},
+{ name: "Double Dragon 5.13a", location: " The Pie Shop "},
+{ name: "The Hand of God 5.11+", location: " The Fortress "},
+{ name: "El Colmillo 5.10c", location: " The Emeralds "},
+{ name: "Vanishing Point 5.10", location: " Lover's Leap "},
+{ name: "Release the Lions 5.11c", location: " Cave Valley (aka Auburn Quarry) "},
+{ name: "Karl's Overhang 5.11", location: " School Rock "},
+{ name: "Star Wars Crack 5.13a", location: "South Star Wall "},
+{ name: "Space Invaders 5.12a", location: " The Pie Shop "},
+{ name: "A Steep Climb Named Desire 5.14a", location: "South Star Wall "},
+{ name: "Human Oddity 5.11d", location: " Cave Valley (aka Auburn Quarry) "},
+{ name: "Welcome To Thunderdome 5.11a", location: " The Emeralds "},
+{ name: "Self Abuse 5.10b", location: " Sugarloaf Area "},
+{ name: "I Be Jammin' 5.10a", location: " The Fortress "},
+{ name: "Neutron 5.10a/b", location: " Cloudburst Canyon "},
+{ name: "Short Subject 5.11d", location: " School Rock "},
+{ name: "Made In Japan 5.11a", location: "Space Wall "},
+{ name: "Bronco 5.12d", location: "South Star Wall "},
+{ name: "East Corner 5.11a/b", location: " Lover's Leap "},
+{ name: "Freak Show 5.11c/d", location: " Lover's Leap "},
+{ name: "Seams to Me 5.10c", location: "Eagle Lake Cliff "},
+{ name: "Babylon 5.12c", location: "Babylon Crag "},
+{ name: "Toby Tops Out 5.12a", location: " The Emeralds "},
+{ name: "Fear No Evil 5.9 R", location: " Lover's Leap "},
+{ name: "Lesbian Love 5.11c", location: " Phantom Spires "},
+{ name: "Living the Dream 5.13b/c", location: " The Pie Shop "},
+{ name: "Delivering the Goods 5.10a", location: " Mayhem Cove "}
+    ];
+
+    var sierrasEasyRoutes = [
+{ name: "Positive Vibrations 5.11a", location: "Incredible Hulk "},
+{ name: "East Buttress 5.7", location: "Mt. Whitney "},
+{ name: "Evolution Traverse 5.9", location: "Mt. Darwin "},
+{ name: "Red Dihedral (aka Yggdrasil) 5.10", location: "Incredible Hulk "},
+{ name: "East Face 5.7", location: "Mt. Whitney "},
+{ name: "Hairline Free 5.13d PG13", location: "Mt. Whitney "},
+{ name: "Mithril Dihedral 5.9+", location: "Mt. Russell "},
+{ name: "Fishhook Arete 5.9", location: "Mt. Russell "},
+{ name: "South Face 5.8", location: "Charlotte Dome "},
+{ name: "Sun Ribbon Arete 5.10a", location: "Temple Crag "},
+{ name: "The Venturi Effect 5.12c", location: "Incredible Hulk "},
+{ name: "Thunderbolt to Sill Traverse 5.9 Easy Snow", location: "Thunderbolt Peak "},
+{ name: "North Arete 5.8", location: "Bear Creek Spire "},
+{ name: "Solar Flare 5.12+", location: "Incredible Hulk "},
+{ name: "The Polish Route 5.10+", location: "Incredible Hulk "},
+{ name: "Shield of Dreams 5.13b", location: "Trapezoid Peak "},
+{ name: "Dark Star 5.10c", location: "Temple Crag "},
+{ name: "Sunspot Dihedral 5.11b", location: "Incredible Hulk "},
+{ name: "Southeast Face 5.8+", location: "Clyde Minaret "},
+{ name: "Swiss Arete 5.7", location: "Mt. Sill "},
+{ name: "Bastille Buttress - Beckey Route 5.10d A0", location: "Lone Pine Peak "},
+{ name: "Free Radical 5.12", location: "Little Slide Spires "},
+{ name: "Harding Route 5.10+", location: "Keeler Needle "},
+{ name: "Puff the Magic Dragon 5.12b", location: "Trapezoid Peak "},
+{ name: "Green Thunder 5.13b", location: "Incredible Hulk "},
+{ name: "Hairline 5.10d C2+", location: "Mt. Whitney "},
+{ name: "Michael Strassman Memorial Route 5.10d", location: "Lone Pine Peak "},
+{ name: "Up in Smoke 5.13a", location: "Incredible Hulk "},
+{ name: "Airstream 5.13a/b", location: "Incredible Hulk "},
+{ name: "Direct North Buttress 5.10b PG13", location: "Merriam Peak "},
+{ name: "Ikigai 5.12a", location: "Bubbs Creek Wall "},
+{ name: "Lenticular Gyrations 5.12", location: "Incredible Hulk "},
+{ name: "Against the Grain 5.11c", location: "Charlotte Dome "},
+{ name: "Tradewinds 5.11d", location: "Incredible Hulk "},
+{ name: "The Emperor 5.12a PG13", location: "Bubbs Creek Wall "},
+{ name: "Star Trekkin' 5.10", location: "Mt. Russell "},
+{ name: "Blowhard 5.12+", location: "Incredible Hulk "},
+{ name: "The Flying Buttress 5.11b", location: "Merriam Peak "},
+{ name: "Sky Pilot 5.11", location: "Mt. Goode "},
+{ name: "Western Front 5.10c", location: "Mt. Russell "}
+    ];
+
+    var sierrasMediumRoutes = [
+{ name: "The Ecstasy of Gold 5.12b", location: "Bubbs Creek Wall "},
+{ name: "Nalazak 5.13d", location: "Incredible Hulk "},
+{ name: "Brutus of Wyde Memorial Route 5.11-", location: "Flatiron Butte (Shangri La) "},
+{ name: "Crimson Gem 5.10b", location: "The Juggernaut "},
+{ name: "The Sword in the Stone 5.11-", location: "Mt. Chamberlin "},
+{ name: "Harvest Time 5.12d", location: "Trapezoid Peak "},
+{ name: "Rasta Root 5.12b", location: "Trapezoid Peak "},
+{ name: "Southeast Arete 5.10a", location: "Castle Dome "},
+{ name: "Blood of the Monkey 5.12", location: "Keeler Needle "},
+{ name: "Lost in the Sun 5.12a", location: "Incredible Hulk "},
+{ name: "Twilight Pillar 5.8", location: "Norman Clyde Peak "},
+{ name: "Welcome to Krackizstan 5.10d", location: "Mt. Hitchcock "},
+{ name: "Wonder Woman 5.11c", location: "The Thing "},
+{ name: "NE Buttress 5.10b", location: "Picture Peak "},
+{ name: "Wind Shear 5.12b", location: "Incredible Hulk "},
+{ name: "Sun Burn (aka Solar Burn) 5.12", location: "Incredible Hulk "},
+{ name: "Bloody Corner 5.10", location: "Mt. Russell "},
+{ name: "East Face (aka East Pillar) 5.9", location: "Mt. Barnard East Peak (aka Peak 13,680 +) "},
+{ name: "7th Gable, or Spiral Ridge 5.10-", location: "Seven Gables "},
+{ name: "Southeast Face, Direct Start 5.9+", location: "Clyde Minaret "},
+{ name: "East Face 5.10b", location: "Aiguille Extra "},
+{ name: "What's Up Bubb? 5.12a/b", location: "Bubbs Creek Wall "}
+    ];
+
+    var sierrasHardRoutes = [
+{ name: "Firebird Ridge 5.9", location: "Norman Clyde Peak "},
+{ name: "East Buttress 5.10+", location: "Aiguille Extra "},
+{ name: "Eye of the Storm 5.12", location: "Incredible Hulk "},
+{ name: "It's a Trap!...ezoid 5.10", location: "Trapezoid Peak "},
+{ name: "Watchtower - North Face 5.8", location: "Tower Peak "},
+{ name: "Donathan Mustache 5.12a", location: " Sky Blue Lake Basin "},
+{ name: "Pressure Drop 5.11", location: "Mt. Hitchcock "},
+{ name: "North Buttress (aka the Dragrace aka the Dragway) 5.10", location: "Dragtooth "},
+{ name: "North Buttress Variation. 5.11+", location: "Mt. Goode "},
+{ name: "Hanshi 5.12+", location: "Bubbs Creek Wall "},
+{ name: "Nightcrawlers 5.11+ R", location: "The Juggernaut "},
+{ name: "Dabeloni Dihedral 5.10", location: "University Peak Cirque "},
+{ name: "Gargoyle 5.11b PG13", location: "Merriam Peak "},
+{ name: "The Starlight Dihedral 5.11", location: "Mt. Hitchcock "},
+{ name: "Southeast Face 5.7 Easy Snow", location: "Petit Griffon "},
+{ name: "West Arete 5.8+ PG13", location: "Mt. Winchell "},
+{ name: "Planaria 5.10 R", location: "Temple Crag "},
+{ name: "Mindy 5.11", location: "Mt. Lamarck "},
+{ name: "Infinity Pool 5.10+", location: " Sky Blue Lake Basin "},
+{ name: "The Foundation Crack 5.11", location: "Merriam Peak "},
+{ name: "Too Much Fun 5.10-", location: "Arctic Lake Wall "},
+{ name: "Crystal Bonsai 5.11 A3", location: "Bubbs Creek Wall "},
+{ name: "J&J Route 5.7+", location: "Wizard's Hat "}
+    ];
+
+    var jtreeEasyRoutes = [
+{ name: "SW Corner 5.6", location: "Headstone Rock "},
+{ name: "Double Cross 5.7+", location: " The Old Woman "},
+{ name: "Illusion Dweller 5.10b", location: " The Sentinel "},
+{ name: "Mental Physics 5.7 PG13", location: "Lenticular Dome "},
+{ name: "Bird of Fire 5.10a", location: " Isles in the Sky "},
+{ name: "Sail Away 5.8-", location: "Hidden Tower "},
+{ name: "Leave it to Beaver (aka The Beaver) 5.12a", location: " Sports Challenge Rock "},
+{ name: "Equinox 5.12c", location: " Jerry's Quarry and Lost Pencil Areas "},
+{ name: "Touch and Go 5.9", location: "Touch and Go Face "},
+{ name: "O'Kelley's Crack 5.11a", location: "Rusty Wall "},
+{ name: "Figures on a Landscape (aka Monkey on My Back) 5.10b R", location: " The Astro Domes "},
+{ name: "Coarse and Buggy 5.11a/b", location: " Dihedral Rock "},
+{ name: "Heart of Darkness 5.11a", location: "Conrad Rock - Heart of Darkness Corridor "},
+{ name: "Rubicon 5.10c", location: "Rubicon Formation "},
+{ name: "Solid Gold 5.10b", location: " The Astro Domes "},
+{ name: "Clean and Jerk 5.10c", location: " Sports Challenge Rock "},
+{ name: "Tax Man 5.10a", location: "IRS Wall "},
+{ name: "Wangerbanger 5.11c", location: "Rusty Wall "},
+{ name: "EBGB's 5.10d", location: "EBGB Block Area "},
+{ name: "Exorcist 5.10a", location: " Hall of Horrors "},
+{ name: "Breakfast of Champions 5.8+", location: " The Astro Domes "},
+{ name: "More Monkey than Funky 5.11c", location: " Barker Dam Area "},
+{ name: "Heart and Sole 5.10a", location: "Echo Rock - West Face "},
+{ name: "Poodles are People Too 5.10b", location: " Hemingway Buttress "},
+{ name: "Stingray 5.13d", location: "Iguana Dome "},
+{ name: "Hot Rocks 5.11c", location: "Rock Hudson "},
+{ name: "The Acid Crack 5.12d", location: " Arid Piles "},
+{ name: "Imaginary Voyage 5.10d", location: "Imaginary Voyage Formation "},
+{ name: "Run For Your Life 5.10b R", location: "Tumbling Rainbow Formation "},
+{ name: "Bath Water 5.9", location: " Loveland "}
+    ];
+
+    var jtreeMediumRoutes = [
+{ name: "Popular Mechanics 5.9", location: " White Cliffs of Dover "},
+{ name: "Big Moe 5.11a R", location: " Echo Cove "},
+{ name: "Asteroid Crack 5.12d", location: "Asteroid Belt "},
+{ name: "Firewater Chimney 5.10b", location: " The Valley of Kings "},
+{ name: "High Strung 5.9", location: "Foolproof Tower "},
+{ name: "Swept Away 5.11a", location: "Echo Rock - South Face "},
+{ name: "Father Figure 5.12d", location: " Barker Dam Area "},
+{ name: "Sidewinder 5.10b PG13", location: " Steve Canyon "},
+{ name: "Perpetual Motion 5.10d", location: " Virgin Islands Area "},
+{ name: "Ace of Spades 5.9", location: " White Cliffs of Dover "},
+{ name: "LA Woman 5.11a", location: "Lost Horse Wall - Left Side "},
+{ name: "Vector 5.11c", location: " Loveland "},
+{ name: "Between a Rock and a Hard Place 5.10b", location: " Virgin Islands Area "},
+{ name: "Perfect Fingers 5.10-", location: " Walt's Rocks "},
+{ name: "Dangling Woo Li Master 5.10a", location: " Diarrhea Dome "},
+{ name: "Sole Fusion 5.12b PG13", location: "Echo Rock - South Face "},
+{ name: "The Maneater 5.10d", location: "Maneater Rock "},
+{ name: "I Can't Believe It's a Girdle 5.10b R", location: "Freak Brothers Dome "},
+{ name: "Physical Graffiti 5.11a", location: "Anasazi Wall "},
+{ name: "Astroturf 5.10c R", location: " The Astro Domes "},
+{ name: "Hidden Arch 5.11d", location: " Houser Buttress Area "},
+{ name: "Alf's Arete 5.11a", location: "IRS Wall "},
+{ name: "Where Have all the Cowboys Gone 5.10d", location: " Saddle Rocks "},
+{ name: "Field and Stream 5.10c", location: " White Cliffs of Dover "},
+{ name: "Throbbing Gristle 5.12a/b", location: " Loveland "},
+{ name: "Tic Tic Boom 5.12a", location: "Tumbling Rainbow Formation "},
+{ name: "Bikini Whale 5.12b/c", location: "The Hidden Cliff "},
+{ name: "Crosstown Traffic 5.11a", location: "Lost Horse Wall - Left Side "},
+{ name: "29 Palms 5.11d", location: " Arid Piles "},
+{ name: "Canadian Driftwood (aka The Man Who Shot Liberty Valance) 5.9", location: "Upper Dodge City "}
+    ];
+
+    var jtreeHardRoutes = [
+{ name: "Runaway 5.11a/b", location: "Tumbling Rainbow Formation "},
+{ name: "Trapeze 5.11d", location: "Intersection Rock "},
+{ name: "Prime Real Estate 5.12c/d", location: " The Land that Time Forgot "},
+{ name: "The Chameleon 5.12b PG13", location: " The Sentinel "},
+{ name: "The Lobster 5.12b/c R", location: " Sports Challenge Rock "},
+{ name: "Totally Tubular 5.8", location: " Loveland "},
+{ name: "Overnight Sensation 5.11b", location: "Cyclops Rock "},
+{ name: "The Last Stand 5.12a", location: " The Valley of Kings "},
+{ name: "Such a Savage 5.11a R", location: " The Astro Domes "},
+{ name: "Space Mountain 5.10b", location: " Saddle Rocks "},
+{ name: "White Rain 5.11a", location: " Walt's Rocks "},
+{ name: "Scary Poodles 5.11b", location: " Hemingway Buttress "},
+{ name: "Too Secret to Find 5.10b", location: "Hidden Dome "},
+{ name: "Bighorn Dihedral 5.10c", location: "Suicide Horn Rock "},
+{ name: "Baby Apes 5.12c", location: " Peyote Cracks Formation "},
+{ name: "Hyperion 5.11d", location: "Grey Giant "},
+{ name: "Black President 5.11a", location: "Elephant Arches "},
+{ name: "Sun Runner 5.11b", location: "The Wedge "},
+{ name: "Poodlephile 5.9", location: " Saddle Rocks "},
+{ name: "Eureka! 5.12b", location: "Rattlesnake Buttress "},
+{ name: "ZZZZZ Direct Start 5.9 PG13", location: " Little Hunk "},
+{ name: "Desert Song 5.11b R", location: " The Sentinel "},
+{ name: "Number Two (aka the Weasel Boys Arete) 5.12b", location: " Jerry's Quarry and Lost Pencil Areas "},
+{ name: "Up 40 5.11b R", location: "The Molar "},
+{ name: "Split Personality 5.11d", location: " The Asylum "},
+{ name: "The Rattler 5.10c", location: "Emerald City "},
+{ name: "Mojave Queen 5.11b", location: " Walt's Rocks "},
+{ name: "South of Heaven 5.12d", location: " The Valley of Kings "},
+{ name: "Presupposition 5.11c PG13", location: " Indian Cove Campground "},
+{ name: "Such a Line 5.10d", location: "Zebra Cliffs East Face "}
+    ];
+
+    var sfbayEasyRoutes = [
+{ name: "The Choss Whisperer 5.12b", location: "Motown "},
+{ name: "The Bronze Hog 5.11b/c", location: " Vent 5 "},
+{ name: "Endless Bummer 5.13b", location: "Endless Bummer Rock "},
+{ name: "Micro Aggression 5.10a", location: "Kim's gym (aka Kym's Gym) "},
+{ name: "Sweet Potato 5.12-", location: "Blind Man's Bluff "},
+{ name: "One Day As A Tiger 5.12b/c", location: "Cobblestone Wall "},
+{ name: "Better Than Sex.... Porpoises 5.12c", location: "Emperor Boulder "},
+{ name: "The Inner Game 5.11a PG13", location: "Cobblestone Wall "},
+{ name: "Wubble 5.12b", location: " Vent 5 "},
+{ name: "Surf Safari 5.13d", location: "Endless Bummer Rock "},
+{ name: "Clamydia 5.12a", location: "Waterfall Cliff "},
+{ name: "Sex Porpoises 5.12c", location: "Main Rock Mickey's"},
+{ name: "Sign Language 5.11-", location: "The Egg "},
+{ name: "Starfish Enterprise 5.11b", location: "Tower of the People / The Nug "},
+{ name: "Egghead 5.11b PG13", location: "The Egg "},
+{ name: "Toxic Masculinity 5.10c", location: "Kim's gym (aka Kym's Gym) "},
+{ name: "Mickey's Beach Arete 5.13b", location: "Main Rock Mickey's"},
+{ name: "Boromir 5.11a", location: " Pine Canyon "},
+{ name: "Get Buck In The Yolk 5.11c", location: "The Egg "},
+{ name: "Courtney 5.12a", location: "Main Rock Mickey's"},
+{ name: "The Unnatural Act 5.11 V3 X", location: " Glen Canyon "},
+{ name: "Super Flower Blood Moon 5.12a", location: "Tower of the People / The Nug "},
+{ name: "Fish n Chip 5.10d", location: "Tower of the People / The Nug "},
+{ name: "Krokus 5.12a R", location: "Indian Rock "},
+{ name: "Scorpio Rising 5.12c", location: "Main Rock Mickey's"},
+{ name: "Holy Mackerel 5.13a", location: "Main Rock Mickey's"},
+{ name: "Redneck Rampage 5.10d", location: " Pine Canyon "},
+{ name: "Deliverance 5.12c", location: " Pine Canyon "},
+{ name: "The Emperor's New Clothes 5.12d", location: "Emperor Boulder "},
+{ name: "The Yodel King 5.11+", location: "Goat Rock "}
+    ];
+
+    var sfbayMediumRoutes = [
+{ name: "I-12 5.11- R", location: " Indian Rock Park "},
+{ name: "Chameleon 5.12a", location: " Boy Scout Rocks "},
+{ name: "Far Left Watercourse 5.11d V4 R", location: " Indian Rock Park "},
+{ name: "Tiny Dancer 5.10c", location: "Blind Man's Bluff "},
+{ name: "Albino 5.10c", location: "Roadside Rock "},
+{ name: "Dreams of White Porsches 5.13c", location: "Main Rock Mickey's"},
+{ name: "Baby Driver 5.10d", location: "Blind Man's Bluff "},
+{ name: "Between Showers 5.10b", location: "Lower Guadalupe Rock "},
+{ name: "Captain Hook 5.10 R", location: "The Treasure Chest "},
+{ name: "Megalodon 5.12d", location: "Main Rock Mickey's"},
+{ name: "Calistoga Rodeo 5.11b", location: "Blind Man's Bluff "},
+{ name: "The Patriot 5.12b", location: "Shipwreck Wall "},
+{ name: "Beast of Burden 5.11c", location: "The Bear "},
+{ name: "Crows Nest 5.11b", location: "Shipwreck Wall "},
+{ name: "The Way of the Road 5.11b", location: "The Bubble "},
+{ name: "New Potato 5.11", location: "Blind Man's Bluff "},
+{ name: "Sturgeon 5.13-", location: "Main Rock Mickey's"},
+{ name: "This is your Brain on Drugs 5.12c", location: "The Egg "}
+    ];
+
+    var sfbayHardRoutes = [
+{ name: "Jason and the Argonauts 5.12b/c", location: "The Bear "},
+{ name: "Aeronautical Engineer 5.11b/c", location: "Castle Rock Proper "},
+{ name: "5.12 face 5.12a", location: "Lexington Rock "},
+{ name: "Big Buddy 5.11+ PG13", location: "The Bubble "},
+{ name: "Above the Law 5.11b/c PG13", location: "Waterfall Cliff "},
+{ name: "Squid Vicious 5.13a", location: "Main Rock Mickey's"},
+{ name: "Big Tuna 5.12d R", location: "Main Rock Mickey's"},
+{ name: "Naked and Disfigured 5.13a", location: "Main Rock Mickey's"},
+{ name: "Ultramega 5.12d", location: " Table Rock "},
+{ name: "Railing Moss 5.11b", location: " Boy Scout Rocks "},
+{ name: "Rectalphobiac 5.11b R", location: "Summit Rock "},
+{ name: "Kana Mota 5.11c", location: "Wappo Tower "},
+{ name: "Jury Duty 5.13c", location: " Sea Crag "},
+{ name: "The Beast 5.11c", location: "The Bear "},
+{ name: "Ceiling Zero 5.12a", location: "Kimball Canyon Crag "},
+{ name: "Yardarm 5.12b", location: "Shipwreck Wall "},
+{ name: "Swashbuckler 5.11a", location: "South Face of Sentinel Rock "},
+{ name: "Footloose 5.11a V1 R", location: "Mossy Rock "}
+    ];
+
+    var eastsideEasyRoutes = [
+{ name: "Third Pillar, Regular Route 5.10a/b", location: "Dana Plateau "},
+{ name: "Pratt's Crack 5.9", location: " Pine Creek Canyon "},
+{ name: "West Face 5.10a", location: "Cardinal Pinnacle "},
+{ name: "Sheila 5.10b", location: " Pine Creek Canyon "},
+{ name: "Southwest Arete 5.9", location: " Buttermilks Main "},
+{ name: "Looney Binge 5.12c", location: "Eldorado Roof "},
+{ name: "John Fischer Memorial Route 5.10c", location: " Pine Creek Canyon "},
+{ name: "The Main Line 5.10b", location: " Pine Creek Canyon "},
+{ name: "Queen of the Heartbreaks 5.11b", location: "Pratt's Crack / Dihedrals Area "},
+{ name: "Bony Fingers 5.11b R", location: " Whitney Portal "},
+{ name: "Beckey Route 5.9", location: " Whitney Portal "},
+{ name: "Ghostrider 5.10c", location: " Whitney Portal "},
+{ name: "Ghostrider 5.10c", location: "Whitney Portal Buttress "},
+{ name: "O.R.G.asm 5.11a", location: "Dihedrals "},
+{ name: "Towering Inferno 5.11b", location: "Eldorado Roof "},
+{ name: "Boi-oi-oi-ing! 5.10a", location: " Patricia Bowl "},
+{ name: "Blindspot 5.11b", location: " Pine Creek Canyon "},
+{ name: "Gorgeous 5.10b", location: "Gorgeous Towers "},
+{ name: "Wages of Skin 5.10+", location: "Gong Show Wall "},
+{ name: "From Chocolate to Morphine 5.11d", location: "Faulty Tower "},
+{ name: "Dr. Evil 5.10a", location: "Gotham City "},
+{ name: "Crack Kingdom 5.10c", location: "Cardinal Pinnacle "},
+{ name: "Sendero Luminoso 5.10b R", location: "Solarium "},
+{ name: "Milkylala - The Rocketship 5.10-", location: "Fifth Canyon "},
+{ name: "V8 Crack 5.10+", location: "Cardinal Pinnacle "},
+{ name: "Atomic Gecko 5.12c", location: "Planetarium / Gecko Wall "},
+{ name: "Rites of Spring 5.10d", location: " Pine Creek Canyon "},
+{ name: "Moment of Zen 5.11-", location: " Pine Creek Canyon "},
+{ name: "Holey Wars 5.13b", location: "Mothership Cliff "},
+{ name: "Espresso Crack 5.11+", location: " Little Egypt "},
+{ name: "Grindrite 5.11b", location: "Gotham City "},
+{ name: "Tsing Tao Extended 5.10b", location: "Great Wall of China "},
+{ name: "Pick Pocket 5.11a", location: "Holy Trinity "},
+{ name: "Darshan (aka Ripoff) 5.12b", location: "Upper Crust "},
+{ name: "Enterprise 5.12b", location: "The Dilithium Crystal "},
+{ name: "Superfly 5.10c", location: "Cracked Towers "},
+{ name: "Expressway 5.11b", location: "Upper Crust "}
+    ];
+
+    var eastsideMediumRoutes = [
+{ name: "Alabama Hills Gang 5.10a", location: "The Loaf "},
+{ name: "Slip 'n Slide 5.9", location: "Lower Elbow Room "},
+{ name: "Wild Will's Arete 5.8", location: " Area 13 "},
+{ name: "Tanager (aka '5.11 Crack') 5.10b", location: " Whitney Portal "},
+{ name: "Pull My Finger 5.10a", location: " Main Island "},
+{ name: "Fight Club 5.13b", location: "Mothership Cliff "},
+{ name: "Aurora 5.13a", location: "Great Wall of China "},
+{ name: "Hair Raiser Buttress 5.9 R", location: " Granite Basin "},
+{ name: "Hardly Wallbanger 5.10c", location: "Pub Wall "},
+{ name: "The Prow 5.12b", location: "Cardinal Pinnacle "},
+{ name: "The Speed of Life 5.11b", location: " Ellery Bowl "},
+{ name: "Pinkpoint Panther 5.9", location: "Supreme Wizard Formation "},
+{ name: "Cromagnon 5.10-", location: " Dike Wall "},
+{ name: "The Megaplex 5.11c", location: "Mustache Wall "},
+{ name: "Lava Haul 5.10a", location: "Flavin Haven "},
+{ name: "Flame Thrower 5.11c", location: "Mustache Wall "},
+{ name: "Yellow Peril 5.10c", location: "Great Wall of China "},
+{ name: "Pangborn 5.9+", location: "The Loaf "},
+{ name: "Wacked Scenario 5.10b", location: "Gorgeous Towers "},
+{ name: "Sex Packets 5.12b", location: "Holy Trinity "},
+{ name: "Excelsior 5.13a", location: "Mothership Cliff "},
+{ name: "He She 5.10b", location: "Gong Show Wall "},
+{ name: "Love Stinks 5.11a", location: "Banana Belt "},
+{ name: "Coven (Seriously Though) 5.11b", location: "Mustache Wall "},
+{ name: "Manchurian Candidate 5.11b", location: "Great Wall of China "},
+{ name: "Trailer Tramp 5.12c", location: "Trailerpark "},
+{ name: "Subatomic 5.10c", location: "Planetarium / Gecko Wall "},
+{ name: "Hang 'em High 5.10a", location: "The Western Wall "},
+{ name: "Modern Trad 5.10a", location: " Patricia Bowl "}
+    ];
+
+    var eastsideHardRoutes = [
+{ name: "Anything Goes 5.12a", location: "Gong Show Wall "},
+{ name: "Spaceballs 5.12d", location: "Planetarium / Gecko Wall "},
+{ name: "Borrowing From Tradition 5.10b", location: " Area 13 "},
+{ name: "There Goes the Neighborhood 5.12b", location: "Monkey to Monk Cliff "},
+{ name: "Still Not A Player 5.11b", location: "Diamond Face "},
+{ name: "It's Not The Wheat 5.12a", location: "Mustache Wall "},
+{ name: "Corona 5.13a/b", location: "Great Wall of China "},
+{ name: "Short but Stout 5.13a", location: "Crack of Noon Buttress "},
+{ name: "Sideshow 5.10a", location: "Gong Show Wall "},
+{ name: "Sons of Liberty 5.10d", location: " Patricia Bowl "},
+{ name: "Gangway 5.12a", location: " Whitney Portal "},
+{ name: "Klingon 5.12a", location: "The Dilithium Crystal "},
+{ name: "Gape Index 5.12b/c", location: "Eldorado Roof "},
+{ name: "Pocket Dance 5.10c", location: "Banana Belt "},
+{ name: "Eclipsed 5.11d", location: "Pratt's Crack / Dihedrals Area "},
+{ name: "Photon Torpedo 5.11b", location: "The Dilithium Crystal "},
+{ name: "High Plains Drifter 5.10b PG13", location: "The Western Wall "},
+{ name: "Don't Call it a Comeback 5.12a", location: "Mothership Cliff "},
+{ name: "Biochemically Compacted Sexual Affection (aka, 'Sex') 5.12a", location: "Holy Trinity "},
+{ name: "Yellow Streak 5.13a", location: "Great Wall of China "},
+{ name: "Hungover 5.11b", location: "Pub Wall "},
+{ name: "Driller Instinct 5.10d", location: " Main Island "},
+{ name: "Badda Bing, Badda Boom 5.10b", location: "McCracken Wall "},
+{ name: "Black Capacitor 5.12+", location: "Solarium "},
+{ name: "The Toiler 5.12a", location: "Mustache Wall "},
+{ name: "Pretty in Pink 5.10b", location: "Supreme Wizard Formation "},
+{ name: "Men in Tights 5.11a", location: "Supreme Wizard Formation "},
+{ name: "Honky Special Variation 5.12a", location: "Holy Trinity "},
+{ name: "Close Shave 5.12a", location: "Mustache Wall "},
+{ name: "Wind in the Willows (1st anchor) 5.11d", location: "Planetarium / Gecko Wall "},
+{ name: "Wind in the Willows 5.12d", location: "Planetarium / Gecko Wall "},
+{ name: "Godzilla Does the Dizzy Tango 5.12a", location: "Eldorado Roof "},
+{ name: "Dark Knight 5.12a", location: "Gotham City "},
+{ name: "Boom Chakalaka 5.10a", location: "Holy Trinity "},
+{ name: "Stone Cold Fusion 5.12a", location: "Mustache Wall "}
+    ];
+
+    var sonoraEasyRoutes = [
+{ name: "AC Devil Dog 5.10d", location: "The Grotto "},
+{ name: "Rawhide 5.11a", location: "The Grotto "},
+{ name: "Soap on a Rope 5.13a", location: "Jailhouse Rock "},
+{ name: "Cock the Hammer 5.10c", location: " Road 5N06 Area "},
+{ name: "Fugitive 5.13a", location: "Jailhouse Rock "},
+{ name: "Jailbait 5.13c", location: "Jailhouse Rock "},
+{ name: "Pangea 5.10c", location: " Road 5N06 Area "},
+{ name: "Snake Bite 5.11-", location: "The Grotto "},
+{ name: "Iron Junkie 5.12c", location: "Jailhouse Rock "},
+{ name: "Whipping Boy 5.12b", location: "Jailhouse Rock "},
+{ name: "Delirious 5.12a", location: " Columns of the Giants "},
+{ name: "One Fine Day 5.8+", location: " Chipmunk Flat "},
+{ name: "Peaceful Warrior 5.10d", location: " Road 5N06 Area "},
+{ name: "Green Monster 5.11d", location: " Road 5N06 Area "},
+{ name: "Insecurity 5.12d", location: "Jailhouse Rock "},
+{ name: "Alcatraz 5.13b", location: "Jailhouse Rock "},
+{ name: "You Insolent Peasant 5.9", location: " Chipmunk Flat "},
+{ name: "Cell Block 5.13a", location: "Jailhouse Rock "},
+{ name: "The Juice 5.13d", location: "Jailhouse Rock "},
+{ name: "Spin Doctor 5.12d", location: " Columns of the Giants "},
+{ name: "Solstice 5.10b", location: " Chipmunk Flat "},
+{ name: "Pulp Friction 5.12b", location: "Jailhouse Rock "},
+{ name: "Misdemeanor 5.12d", location: "Jailhouse Rock "},
+{ name: "The Governor 5.13b", location: "Jailhouse Rock "},
+{ name: "Birdman 5.13b", location: "Jailhouse Rock "},
+{ name: "Tommy Lee 5.13b", location: "Jailhouse Rock "},
+{ name: "Most Wanted (AKA Full Fugitive) 5.13b", location: "Jailhouse Rock "},
+{ name: "Haul of Justice 5.13b", location: "Jailhouse Rock "},
+{ name: "Three Strikes And You're Out 5.13c", location: "Jailhouse Rock "},
+{ name: "Talus Dweller 5.12a", location: " Columns of the Giants "}
+    ];
+
+    var sonoraMediumRoutes = [
+{ name: "Assassin 5.13d", location: "Jailhouse Rock "},
+{ name: "Death Row 5.13d", location: "Jailhouse Rock "},
+{ name: "Overhaul 5.14a", location: "Jailhouse Rock "},
+{ name: "Burning Down the House 5.14b", location: "Jailhouse Rock "},
+{ name: "Smooth Criminal 5.14b", location: "Jailhouse Rock "},
+{ name: "Green Mile 5.14c", location: "Jailhouse Rock "},
+{ name: "Emigrant Labor 5.9+", location: "Emigrant Labor "},
+{ name: "Heartbreaker 5.9", location: "Big Face "},
+{ name: "Not Pneumonia 5.10d", location: " Burst Rock "},
+{ name: "Four Days Off 5.10c", location: " Burst Rock "},
+{ name: "Puffin' Stuff 5.11c", location: " Burst Rock "},
+{ name: "Forced Entry 5.13c", location: "Jailhouse Rock "},
+{ name: "Electric Chair 5.12d", location: "Jailhouse Rock "},
+{ name: "Life Sentence 5.13b", location: "Jailhouse Rock "},
+{ name: "Mr. Microphone 5.12a", location: " Columns of the Giants "},
+{ name: "Pardon 5.13b", location: "Jailhouse Rock "},
+{ name: "La Dentista (aka Behemoth) 5.12c", location: " Columns of the Giants "},
+{ name: "Blade Runner 5.12c/d", location: " Columns of the Giants "}
+    ];
+
+    var sonoraHardRoutes = [
+{ name: "Blow of Death 5.12b", location: " Columns of the Giants "},
+{ name: "Atomic Sky 5.13a", location: " Columns of the Giants "},
+{ name: "Tinkerâ€™s Trough 5.7", location: " Columns of the Giants "},
+{ name: "Micro Soft 5.8", location: " Columns of the Giants "},
+{ name: "Cassiopeia 5.10b", location: " Chipmunk Flat "},
+{ name: "Spread Sheet 5.9", location: " Columns of the Giants "},
+{ name: "Crystal Planet 5.10c", location: " Road 5N06 Area "},
+{ name: "Funny Man 5.12a", location: "Midwall "},
+{ name: "The sincerest form of flattery 5.10a", location: " Chipmunk Flat "},
+{ name: "Lumpy Gravy 5.11a", location: " Road 5N06 Area "},
+{ name: "Dry Bones Live Again 5.10a", location: " Chipmunk Flat "},
+{ name: "Raise the Dead 5.10b", location: " Chipmunk Flat "},
+{ name: "Love Lies Bleeding 5.11a", location: " Chipmunk Flat "},
+{ name: "Heaven's Staircase 5.12- V4 R", location: "God's Bath "},
+{ name: "The Ancient Dwarf 5.10a/b", location: "The Center Dwarf "},
+{ name: "Whopper 5.7", location: "Hamburger Rock "}
+    ];
+
+    var options = document.querySelectorAll('.option');
+    var resultText = document.getElementById('result');
+    var streakText = document.getElementById('streak');
+    var streakCount = 0;
+    var topScore = 0;
+    var includedLocations = []; // Stores included locations
+    var previousRoutes = []; // Keep track of previously displayed routes
+
+    // Adding event listeners for region buttons
+    document.getElementById('yosemiteBtn').addEventListener('click', function() {
+        toggleLocation('yosemite');
+    });
+
+    document.getElementById('tuolumneBtn').addEventListener('click', function() {
+        toggleLocation('tuolumne');
+    });
+
+    document.getElementById('tahoeBtn').addEventListener('click', function() {
+        toggleLocation('tahoe');
+    });
+
+    document.getElementById('sierrasBtn').addEventListener('click', function() {
+        toggleLocation('sierras');
+    });
+
+    document.getElementById('jtreeBtn').addEventListener('click', function() {
+        toggleLocation('jtree');
+    });
+
+    document.getElementById('sfbayBtn').addEventListener('click', function() {
+        toggleLocation('sfbay');
+    });
+
+    document.getElementById('eastsideBtn').addEventListener('click', function() {
+        toggleLocation('eastside');
+    });
+
+    document.getElementById('sonoraBtn').addEventListener('click', function() {
+        toggleLocation('sonora');
+    });
+
+    // Function to toggle included locations
+    function toggleLocation(location) {
+        var index = includedLocations.indexOf(location);
+        if (index === -1) {
+            includedLocations.push(location);
+        } else {
+            includedLocations.splice(index, 1);
+        }
+        streakCount = 0; // Reset streak count when locations change
+        topScore = 0; // Reset top score when locations change
+        displayQuestion();
+        updateActiveButtons();
+        streakText.innerText = 'Streak: ' + streakCount; // Update streak count display
+            document.getElementById('top-score').innerText = 'Top Score: ' + topScore;
+            updateTopScore(); // Update top score
+    }
+
+    // Function to get a random route based on included locations and streak count
+    function getRandomRoute() {
+        var allRoutes = [];
+        includedLocations.forEach(function(location) {
+            var routes;
+            if (streakCount <= 5) {
+                routes = window[location + 'EasyRoutes'];
+            } else if (streakCount <= 10) {
+                routes = window[location + 'MediumRoutes'];
+            } else {
+                routes = window[location + 'HardRoutes'];
+            }
+            allRoutes = allRoutes.concat(routes);
+        });
+    // Filter out routes that have been displayed before
+    var availableRoutes = allRoutes.filter(function(route) {
+        return !previousRoutes.includes(route.name);
+    });
+
+    // If all routes have been displayed, reset previousRoutes
+    if (availableRoutes.length === 0) {
+        previousRoutes = [];
+        availableRoutes = allRoutes;
+    }
+
+    // Select a random route from availableRoutes
+    var selectedRoute = availableRoutes[Math.floor(Math.random() * availableRoutes.length)];
+    
+    // Add selected route to previousRoutes
+    previousRoutes.push(selectedRoute.name);
+
+    return selectedRoute;
+    }
+
+    // Function to display the question
+    function displayQuestion() {
+        var selectedRoute = getRandomRoute();
+        document.getElementById("climb-name").textContent = selectedRoute.name;
+
+        var correctLocation = selectedRoute.location;
+
+        // Get all unique locations from available routes
+        var uniqueLocations = [];
+        includedLocations.forEach(function(location) {
+            var routes;
+            if (streakCount <= 5) {
+                routes = window[location + 'EasyRoutes'];
+            } else if (streakCount <= 10) {
+                routes = window[location + 'MediumRoutes'];
+            } else {
+                routes = window[location + 'HardRoutes'];
+            }
+            routes.forEach(function(route) {
+                if (!uniqueLocations.includes(route.location)) {
+                    uniqueLocations.push(route.location);
+                }
+            });
+        });
+
+        // Shuffle unique locations array
+        shuffleArray(uniqueLocations);
+
+        // Ensure correct location is included and shuffle again
+        var shuffledOptions = [correctLocation];
+        shuffleArray(shuffledOptions);
+
+        // Choose three additional unique locations for options
+        for (var i = 0; i < 3; i++) {
+            var optionLocation = uniqueLocations[i];
+            if (optionLocation !== correctLocation) {
+                shuffledOptions.push(optionLocation);
+            }
+        }
+
+        // Shuffle options again
+        shuffleArray(shuffledOptions);
+
+        // Set options in DOM
+        options.forEach(function(option, index) {
+            option.textContent = shuffledOptions[index];
+            option.setAttribute('data-correct', option.textContent === correctLocation ? 'true' : 'false');
+        });
+    }
+
+    // Fisher-Yates shuffle algorithm
+    function shuffleArray(array) {
+        for (var i = array.length - 1; i > 0; i--) {
+            var j = Math.floor(Math.random() * (i + 1));
+            var temp = array[i];
+            array[i] = array[j];
+            array[j] = temp;
+        }
+    }
+
+    // Function to update top score
+    function updateTopScore() {
+        if (streakCount > topScore) {
+            topScore = streakCount;
+            document.getElementById('top-score').innerText = 'Top Score: ' + topScore;
+        }
+    }
+
+    // Function to check the answer
+    function checkAnswer(clickedOption) {
+        if (clickedOption.getAttribute('data-correct') === 'true') {
+            resultText.innerText = 'Nice!';
+            streakCount++;
+            updateTopScore(); // Update top score
+        } else {
+            resultText.innerText = 'Gumby! - correct location is ' + document.querySelector('.option[data-correct="true"]').textContent;
+            streakCount = 0;
+        }
+        streakText.innerText = 'Streak: ' + streakCount;
+
+        setTimeout(function() {
+            resultText.innerText = '';
+            displayQuestion();
+        }, 2200);
+    }
+
+    // Function to update active buttons
+    function updateActiveButtons() {
+        document.querySelectorAll('button').forEach(function(btn) {
+            btn.classList.remove('active');
+        });
+        includedLocations.forEach(function(location) {
+            document.getElementById(location + 'Btn').classList.add('active');
+        });
+    }
+
+    // Adding event listeners for options
+    options.forEach(function(option) {
+        option.addEventListener('click', function()
+{
+            checkAnswer(this);
+        });
+    });
+
+    // Initial display of question
+    displayQuestion();
+</script>
+
+</body>
+</html>
+
