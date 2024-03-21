@@ -75,6 +75,7 @@
         <button id="sfbayBtn">SF Bay</button>
         <button id="eastsideBtn">Eastside</button>
         <button id="sonoraBtn">Sonora</button>
+        <p id="top-score">Top Score: 0</p>
         <p id="streak">Streak: 0</p>
     </div>
     <h2 id="climb-name"></h2>
@@ -331,7 +332,6 @@
     ];
 
     var tahoeMediumRoutes = [
-{ name: "Super Size Me 5.11a", location: " The Emeralds "},
 { name: "Tombstone Terror 5.10c", location: " Lover's Leap "},
 { name: "Touch and Go 5.9", location: " Black Wall "},
 { name: "Scimitar 5.9 R", location: " Lover's Leap "},
@@ -663,11 +663,9 @@
 { name: "Pratt's Crack 5.9", location: " Pine Creek Canyon "},
 { name: "West Face 5.10a", location: "Cardinal Pinnacle "},
 { name: "Sheila 5.10b", location: " Pine Creek Canyon "},
-{ name: "[Redacted] 5.10c", location: "Emergency Room "},
 { name: "Southwest Arete 5.9", location: " Buttermilks Main "},
 { name: "Looney Binge 5.12c", location: "Eldorado Roof "},
 { name: "John Fischer Memorial Route 5.10c", location: " Pine Creek Canyon "},
-{ name: "John Fischer Memorial Route 5.10c", location: "PSOM Slab "},
 { name: "The Main Line 5.10b", location: " Pine Creek Canyon "},
 { name: "Queen of the Heartbreaks 5.11b", location: "Pratt's Crack / Dihedrals Area "},
 { name: "Bony Fingers 5.11b R", location: " Whitney Portal "},
@@ -689,7 +687,6 @@
 { name: "Atomic Gecko 5.12c", location: "Planetarium / Gecko Wall "},
 { name: "Rites of Spring 5.10d", location: " Pine Creek Canyon "},
 { name: "Moment of Zen 5.11-", location: " Pine Creek Canyon "},
-{ name: "Moment of Zen 5.11-", location: "Lamb Canyon Wall "},
 { name: "Holey Wars 5.13b", location: "Mothership Cliff "},
 { name: "Espresso Crack 5.11+", location: " Little Egypt "},
 { name: "Grindrite 5.11b", location: "Gotham City "},
@@ -705,11 +702,10 @@
 { name: "Alabama Hills Gang 5.10a", location: "The Loaf "},
 { name: "Slip 'n Slide 5.9", location: "Lower Elbow Room "},
 { name: "Wild Will's Arete 5.8", location: " Area 13 "},
-{ name: "Tanager (aka "5.11 Crack") 5.10b", location: " Whitney Portal "},
+{ name: "Tanager (aka '5.11 Crack') 5.10b", location: " Whitney Portal "},
 { name: "Pull My Finger 5.10a", location: " Main Island "},
 { name: "Fight Club 5.13b", location: "Mothership Cliff "},
 { name: "Aurora 5.13a", location: "Great Wall of China "},
-{ name: "Hair Raiser Buttress 5.9 R", location: " Granite Basin "},
 { name: "Hair Raiser Buttress 5.9 R", location: " Granite Basin "},
 { name: "Hardly Wallbanger 5.10c", location: "Pub Wall "},
 { name: "The Prow 5.12b", location: "Cardinal Pinnacle "},
@@ -753,7 +749,7 @@
 { name: "Photon Torpedo 5.11b", location: "The Dilithium Crystal "},
 { name: "High Plains Drifter 5.10b PG13", location: "The Western Wall "},
 { name: "Don't Call it a Comeback 5.12a", location: "Mothership Cliff "},
-{ name: "Biochemically Compacted Sexual Affection (aka, "Sex") 5.12a", location: "Holy Trinity "},
+{ name: "Biochemically Compacted Sexual Affection (aka, 'Sex') 5.12a", location: "Holy Trinity "},
 { name: "Yellow Streak 5.13a", location: "Great Wall of China "},
 { name: "Hungover 5.11b", location: "Pub Wall "},
 { name: "Driller Instinct 5.10d", location: " Main Island "},
@@ -849,6 +845,7 @@
     var resultText = document.getElementById('result');
     var streakText = document.getElementById('streak');
     var streakCount = 0;
+    var topScore = 0;
     var includedLocations = []; // Stores included locations
 
     // Adding event listeners for region buttons
@@ -975,11 +972,20 @@
         }
     }
 
+    // Function to update top score
+    function updateTopScore() {
+        if (streakCount > topScore) {
+            topScore = streakCount;
+            document.getElementById('top-score').innerText = 'Top Score: ' + topScore;
+        }
+    }
+
     // Function to check the answer
     function checkAnswer(clickedOption) {
         if (clickedOption.getAttribute('data-correct') === 'true') {
             resultText.innerText = 'Nice!';
             streakCount++;
+            updateTopScore(); // Update top score
         } else {
             resultText.innerText = 'Nope - correct location is ' + document.querySelector('.option[data-correct="true"]').textContent;
             streakCount = 0;
